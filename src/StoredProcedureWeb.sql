@@ -1,9 +1,14 @@
 delimiter ;
-source schema/Request.sql
-source schema/Application.sql
+source src/schema/Request.sql
+source src/schema/Application.sql
+source src/schema/Module.sql
 
 delimiter |
-source procedures/Stdlib.sql
-source procedures/Request.sql
-source procedures/Application.sql
+source src/procedures/Stdlib.sql
+source src/procedures/Request.sql
+source src/procedures/Response.sql
+source src/procedures/Application.sql
+source src/procedures/Module.sql
 delimiter ;
+
+CALL module_load_modules ();

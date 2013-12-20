@@ -4,4 +4,4 @@ BEGIN
     PREPARE call_statement FROM @call_sql_tmp;
     EXECUTE call_statement;
     DEALLOCATE PREPARE call_statement;
-END;
+END|

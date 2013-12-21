@@ -14,13 +14,13 @@ BEGIN
     CALL application_router (document_uri, controller, action);
     
     IF
-        controller IS NULL
-        OR action IS NULL
+        controller != NULL
+        AND action = NULL
     THEN
+        CALL application_dispatch (controller, action, request_id, finish);
+    ELSE
         CALL application_error (request_id, 404);
     END IF;
-    
-    CALL application_dispatch (controller, action, request_id, finish);
 END|
 
 CREATE PROCEDURE application_router (IN document_uri TEXT, OUT controller VARCHAR(255), OUT action VARCHAR(255))
@@ -68,11 +68,14 @@ END|
 
 CREATE PROCEDURE application_dispatch_error (IN request_id INT UNSIGNED, IN error_code SMALLINT UNSIGNED)
 BEGIN
+    DECLARE controller VARCHAR(255);
+    DECLARE action VARCHAR(255);
+
     CALL application_router(CONCAT('error/', error_code), controller, action);
     
     IF
-        controller IS NOT NULL
-        OR action IS NOT NULL
+        controller != NULL
+        AND action != NULL
     THEN
         CALL application_dispatch (controller, action, request_id);
     END IF;

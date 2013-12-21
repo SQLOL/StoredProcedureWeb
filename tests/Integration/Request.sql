@@ -11,7 +11,7 @@ BEGIN
         '/',
         'HTTP/1.1',
         '8.8.8.8',
-        234234,
+        23423,
         '127.0.0.1',
         80,
         'example.org',
@@ -20,5 +20,5 @@ BEGIN
     
     SET request_id := LAST_INSERT_ID();
     
-    
+    CALL sqlunit_pass ('integration_request', 'Success');
 END|

@@ -1,16 +1,17 @@
 CREATE PROCEDURE request (
-    query_string TEXT,
-    request_method ENUM('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH'),
-    content_type TEXT,
-    content_length INT UNSIGNED,
-    request_uri TEXT,
-    document_uri TEXT,
-    server_protocol TEXT,
-    remote_addr TEXT,
-    remote_port SMALLINT UNSIGNED,
-    server_addr TEXT,
-    server_port SMALLINT UNSIGNED,
-    server_name TEXT
+    IN query_string TEXT,
+    IN request_method ENUM('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH'),
+    IN content_type TEXT,
+    IN content_length INT UNSIGNED,
+    IN request_uri TEXT,
+    IN document_uri TEXT,
+    IN server_protocol TEXT,
+    IN remote_addr TEXT,
+    IN remote_port SMALLINT UNSIGNED,
+    IN server_addr TEXT,
+    IN server_port SMALLINT UNSIGNED,
+    IN server_name TEXT,
+    IN finish TINYINT(1)
 )
 BEGIN
     INSERT INTO `Request` (
@@ -41,5 +42,5 @@ BEGIN
         server_name
     );
     
-    CALL application(LAST_INSERT_ID());
+    CALL application(LAST_INSERT_ID(), finish);
 END|

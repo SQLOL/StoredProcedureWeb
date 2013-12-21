@@ -1,4 +1,4 @@
-CREATE PROCEDURE application (IN request_id INT UNSIGNED)
+CREATE PROCEDURE application (IN request_id INT UNSIGNED, IN finish TINYINT(1))
 BEGIN
     DECLARE document_uri TEXT;
     DECLARE controller VARCHAR(255);
@@ -20,7 +20,7 @@ BEGIN
         CALL application_error (request_id, 404);
     END IF;
     
-    CALL application_dispatch (controller, action, request_id);
+    CALL application_dispatch (controller, action, request_id, finish);
 END|
 
 CREATE PROCEDURE application_router (IN document_uri TEXT, OUT controller VARCHAR(255), OUT action VARCHAR(255))
@@ -43,14 +43,17 @@ BEGIN
     VALUES (controller, action, pattern);
 END|
 
-CREATE PROCEDURE application_dispatch (IN controller VARCHAR(255), IN action VARCHAR(255), IN request_id INT UNSIGNED)
+CREATE PROCEDURE application_dispatch (IN controller VARCHAR(255), IN action VARCHAR(255), IN request_id INT UNSIGNED, IN finish TINYINT(1))
 BEGIN
     SET @dispatched_call = CONCAT('CALL ', controller, '_', action, ' (', request_id, ')');
     PREPARE dispatched_call FROM @dispatched_call;
     EXECUTE dispatched_call;
     DEALLOCATE PREPARE dispatched_call;
     
-    CALL application_finish (request_id);
+    IF finish = 1
+    THEN
+        CALL application_finish (request_id);
+    END IF;
 END|
 
 CREATE PROCEDURE application_error (IN request_id INT UNSIGNED, IN error_code SMALLINT UNSIGNED)

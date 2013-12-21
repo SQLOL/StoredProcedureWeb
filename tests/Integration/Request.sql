@@ -1,5 +1,7 @@
 CREATE PROCEDURE sqlunit_test_integration_request ()
 BEGIN
+    DECLARE request_id INT UNSIGNED;
+
     CALL request (
         'a=b&b=c&c=d&d=e',
         'GET',
@@ -12,6 +14,11 @@ BEGIN
         234234,
         '127.0.0.1',
         80,
-        'example.org'
+        'example.org',
+        FALSE
     );
+    
+    SET request_id := LAST_INSERT_ID();
+    
+    
 END|

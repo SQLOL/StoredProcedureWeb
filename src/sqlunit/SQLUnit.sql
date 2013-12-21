@@ -15,6 +15,12 @@ BEGIN
     ;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = true;
     
+    CREATE TEMPORARY TABLE sqlunit_results (
+        result ENUM('PASS', 'FAIL', 'INCOMPLETE', 'SKIPPED') NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        message TEXT
+    ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
+    
     OPEN tests;
     
     test_loop: LOOP
@@ -36,4 +42,28 @@ BEGIN
     PREPARE execute_test FROM @execute_test;
     EXECUTE execute_test;
     DEALLOCATE PREPARE execute_test;
+END|
+
+CREATE PROCEDURE sqlunit_pass (IN name VARCHAR(255), IN message TEXT)
+BEGIN
+    INSERT INTO `sqlunit_results` (result, name, message)
+    VALUES ('PASS', name, message);
+END|
+
+CREATE PROCEDURE sqlunit_fail (IN name VARCHAR(255), IN message TEXT)
+BEGIN
+    INSERT INTO `sqlunit_results` (result, name, message)
+    VALUES ('FAIL', name, message);
+END|
+
+CREATE PROCEDURE sqlunit_incomplete (IN name VARCHAR(255), IN message TEXT)
+BEGIN
+    INSERT INTO `sqlunit_results` (result, name, message)
+    VALUES ('INCOMPLETE', name, message);
+END|
+
+CREATE PROCEDURE sqlunit_skip (IN name VARCHAR(255), IN message TEXT)
+BEGIN
+    INSERT INTO `sqlunit_results` (result, name, message)
+    VALUES ('SKIPPED', name, message);
 END|

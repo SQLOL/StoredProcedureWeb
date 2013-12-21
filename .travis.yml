@@ -1,4 +1,5 @@
 before_script:
+  - touch application/config.sql
   - touch application/modules.sql
   - mysql -u travis -e 'CREATE DATABASE StoredProcedureWeb;'
   - mysql -u travis -D StoredProcedureWeb -e 'source src/StoredProcedureWeb.sql;'

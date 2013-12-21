@@ -1,5 +1,6 @@
 CREATE PROCEDURE sqlunit_test_integration_request ()
 BEGIN
+    DECLARE test_name VARCHAR(255) DEFAULT 'sqlunit_test_integration_request';
     DECLARE request_id INT UNSIGNED;
 
     CALL request (
@@ -20,5 +21,10 @@ BEGIN
     
     SET request_id := LAST_INSERT_ID();
     
-    CALL sqlunit_pass ('integration_request', 'Success');
+    IF request_id IS NULL
+    THEN
+        CALL sqlunit_fail (test_name, 'Request ID not generated');
+    ELSE
+        CALL sqlunit_pass ('sqlunit_test_integration_request', 'Success');
+    END IF;
 END|

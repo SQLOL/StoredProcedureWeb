@@ -1,7 +1,7 @@
 CREATE PROCEDURE sqlunit_register_test (IN name VARCHAR(255))
 BEGIN
     INSERT INTO `Test` (name)
-    VALUES (CONCAT('sqlunit_test_', name))
+    VALUES (name)
     ;
 END|
 
@@ -22,6 +22,8 @@ BEGIN
         message TEXT
     ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
     
+    CALL module_trigger_event ('sqlunit_start');
+    
     OPEN tests;
     
     test_loop: LOOP
@@ -31,10 +33,16 @@ BEGIN
             LEAVE test_loop;
         END IF;
         
+        CALL module_trigger_event ('sqlunit_setup');
+        
         CALL sqlunit_execute_test (test_name);
+        
+        CALL module_trigger_event ('sqlunit_teardown');
     END LOOP;
     
     CLOSE tests;
+    
+    CALL module_trigger_event ('sqlunit_end');
 END|
 
 CREATE PROCEDURE sqlunit_results ()

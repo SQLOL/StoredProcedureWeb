@@ -16,6 +16,8 @@ source src/sqlunit/SQLUnit.sql
 source tests/sqlunit.sql
 delimiter ;
 
+CALL module_register_module ('application', TRUE);
+
 source application/modules.sql
 
 CALL module_load_modules;

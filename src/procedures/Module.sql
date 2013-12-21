@@ -52,3 +52,30 @@ BEGIN
     VALUES (module_name, enabled)
     ;
 END|
+
+CREATE PROCEDURE module_trigger_event (IN event_name VARCHAR(255))
+BEGIN
+    DECLARE done TINYINT(1) DEFAULT FALSE;
+    DECLARE module_name VARCHAR(255);
+    DECLARE modules CURSOR FOR
+        SELECT
+            `Module`.`name`
+        FROM `Module`
+        WHERE
+            `Module`.`enabled` = 1
+    ;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    OPEN modules;
+    
+    module_load_loop: LOOP
+        FETCH modules INTO module_name;
+        IF done THEN
+            LEAVE module_load_loop;
+        END IF;
+        
+        CALL module_ducktype_method (module_name, CONCAT('event_', event_name));
+    END LOOP;
+    
+    CLOSE modules;
+END|

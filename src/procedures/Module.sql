@@ -27,13 +27,19 @@ END|
 
 CREATE PROCEDURE module_load_module (IN module_name VARCHAR(255))
 BEGIN
-    DECLARE init_exists TINYINT(1) DEFAULT FALSE;
+    CALL module_ducktype_method (module_name, 'init');
+    CALL module_ducktype_method (module_name, 'register_routes');
+END|
 
-    CALL procedure_exists(CONCAT(module_name, '_init'), init_exists);
+CREATE PROCEDURE module_ducktype_method (IN name VARCHAR(255), IN method VARCHAR(255))
+BEGIN
+    DECLARE method_exists TINYINT(1) DEFAULT FALSE;
     
-    IF init_exists
+    CALL procedure_exists (CONCAT(name, '_', method), method_exists);
+    
+    IF method_exists
     THEN
-        CALL call_dynamic(CONCAT('CALL ', module_name, '_init'));
+        CALL call_dynamic (CONCAT('CALL ', name, '_', method));
     END IF;
 END|
 

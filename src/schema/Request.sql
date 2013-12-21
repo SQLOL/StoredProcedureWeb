@@ -19,5 +19,5 @@ CREATE TABLE Request (
 CREATE TRIGGER incoming_request
     AFTER INSERT
     ON `Request` FOR EACH ROW
-    CALL application (`Request`.`id`)
+    CALL application (NEW.`id`)
 ;

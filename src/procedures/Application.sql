@@ -1,6 +1,8 @@
 CREATE PROCEDURE application (IN request_id INT UNSIGNED)
 BEGIN
     DECLARE document_uri TEXT;
+    DECLARE controller VARCHAR(255);
+    DECLARE action VARCHAR(255);
     
     SELECT
         `Request`.`document_uri` INTO document_uri
@@ -31,20 +33,21 @@ BEGIN
         action
     FROM `Application_Routes` routes
     WHERE
-        `Application_Routes`.`pattern` REGEXP document_uri
+        routes.`pattern` REGEXP document_uri
     ;
+END|
+
+CREATE PROCEDURE application_register_route (IN controller VARCHAR(255), IN action VARCHAR(255), IN pattern TEXT)
+BEGIN
+    INSERT INTO `Application_Routes` (controller, action, pattern)
+    VALUES (controller, action, pattern);
 END|
 
 CREATE PROCEDURE application_dispatch (IN controller VARCHAR(255), IN action VARCHAR(255), IN request_id INT UNSIGNED)
 BEGIN
     CALL call_dynamic (CONCAT('CALL ', controller, '_', action, ' (', request_id, ')'));
     
-    CALL application_retrieve_response(request_id, response);
-    
-    SELECT
-        request_id AS 'request_id',
-        response AS 'response'
-    ;
+    CALL application_finish (request_id);
 END|
 
 CREATE PROCEDURE application_error (IN request_id INT UNSIGNED, IN error_code SMALLINT UNSIGNED)
@@ -69,4 +72,31 @@ BEGIN
     END IF;
 END|
 
-source src/procedures/Application/Controller.sql
+CREATE PROCEDURE application_respond (IN request_id INT UNSIGNED, IN headers TEXT, IN body TEXT)
+BEGIN
+    INSERT INTO `Response` (id, headers, body)
+    VALUES (request_id, headers, body)
+    ;
+END;
+
+CREATE PROCEDURE application_finish (IN request_id INT UNSIGNED)
+BEGIN
+    SELECT
+        `Response`.`id`,
+        `Response`.`headers`,
+        `Response`.`body`
+    FROM `Response`
+    WHERE
+        `Response`.`id` = request_id
+    ;
+    
+    DELETE FROM `Request`
+    WHERE
+        `Request`.`id` = request_id
+    ;
+    
+    DELETE FROM `Response`
+    WHERE
+        `Response`.`id` = request_id
+    ;
+END|

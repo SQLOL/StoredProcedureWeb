@@ -15,7 +15,7 @@ BEGIN
     ;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = true;
     
-    DROP TEMPORARY TABLE `sqlunit_results`;
+    DROP TEMPORARY TABLE IF EXISTS `sqlunit_results`;
     CREATE TEMPORARY TABLE sqlunit_results (
         result ENUM('PASS', 'FAIL', 'INCOMPLETE', 'SKIPPED') NOT NULL,
         name VARCHAR(255) NOT NULL,
@@ -35,9 +35,12 @@ BEGIN
     END LOOP;
     
     CLOSE tests;
-    
+END|
+
+CREATE PROCEDURE sqlunit_results ()
+BEGIN
     SELECT
-        `sqlunit_results`.*
+        *
     FROM `sqlunit_results`
     ;
 END|

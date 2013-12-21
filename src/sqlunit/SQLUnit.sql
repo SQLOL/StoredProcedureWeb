@@ -32,5 +32,8 @@ END|
 
 CREATE PROCEDURE sqlunit_execute_test (IN name VARCHAR(255))
 BEGIN
-    CALL call_dynamic (CONCAT('CALL ', name));
+    SET @execute_test = CONCAT('CALL ', name);
+    PREPARE execute_test FROM @execute_test;
+    EXECUTE execute_test;
+    DEALLOCATE PREPARE execute_test;
 END|

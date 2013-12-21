@@ -45,7 +45,10 @@ END|
 
 CREATE PROCEDURE application_dispatch (IN controller VARCHAR(255), IN action VARCHAR(255), IN request_id INT UNSIGNED)
 BEGIN
-    CALL call_dynamic (CONCAT('CALL ', controller, '_', action, ' (', request_id, ')'));
+    SET @dispatched_call = CONCAT('CALL ', controller, '_', action, ' (', request_id, ')');
+    PREPARE dispatched_call FROM @dispatched_call;
+    EXECUTE dispatched_call;
+    DEALLOCATE PREPARE dispatched_call;
     
     CALL application_finish (request_id);
 END|

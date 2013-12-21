@@ -39,7 +39,10 @@ BEGIN
     
     IF method_exists
     THEN
-        CALL call_dynamic (CONCAT('CALL ', name, '_', method));
+        SET @ducktyped_call := CONCAT('CALL ', name, '_', method);
+        PREPARE ducktyped_call FROM @ducktyped_call;
+        EXECUTE ducktyped_call;
+        DEALLOCATE PREPARE ducktyped_call;
     END IF;
 END|
 

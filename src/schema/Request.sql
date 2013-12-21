@@ -15,9 +15,3 @@ CREATE TABLE Request (
     INDEX request_method (request_method),
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
-
-CREATE TRIGGER incoming_request
-    AFTER INSERT
-    ON `Request` FOR EACH ROW
-    CALL application (NEW.`id`)
-;

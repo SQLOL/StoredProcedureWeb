@@ -1,19 +1,6 @@
 CREATE PROCEDURE sqlunit_test_integration_request ()
 BEGIN
-    INSERT INTO `Request` (
-        query_string,
-        request_method,
-        content_type,
-        content_length,
-        request_uri,
-        document_uri,
-        server_protocol,
-        remote_addr,
-        remote_port,
-        server_addr,
-        server_port,
-        server_name
-    ) VALUES (
+    CALL request (
         'a=b&b=c&c=d&d=e',
         'GET',
         '',

@@ -16,23 +16,23 @@ many database masters as needed, to achieve true Web Scale.
 
 ## Installation
 
-1) Clone this repository
-2) Create a new database
-3) Copy the `application/config.sql.dist` and `application/modules.sql.dist`
+1. Clone this repository
+2. Create a new database
+3. Copy the `application/config.sql.dist` and `application/modules.sql.dist`
 with the .dist suffix removed, and populate any modules and configuration
 as needed.
-4) Execute the `install.sql` script on that database. This will "compile" your
+4. Execute the `install.sql` script on that database. This will "compile" your
 application into the schema, set the configuration and routes up, and load your
 assets into the `Assets` table.
-5) Configure your SAPI. Included in the public directory is a simple PHP-based
+5. Configure your SAPI. Included in the public directory is a simple PHP-based
 SAPI which is helpful for developing your application. Pass the database
 credentials to this script from your webserver, and the rest is taken care of.
 
 ## Building a Distributable
 
-1) With your application installed, run the `build.sh` script with your database
+1. With your application installed, run the `build.sh` script with your database
 name as the parameter. You can optionally specify any flags that `mysqldump`
 accepts, if you need to configure your connection.
-2) Copy the resulting `install.tar.gz` to your project directory in production,
+2. Copy the resulting `install.tar.gz` to your project directory in production,
 and extract it. Execute the extracted install.sql on your production database
 to load your application.

@@ -1,29 +1,29 @@
 CREATE PROCEDURE application (IN request_id INT UNSIGNED, IN finish TINYINT(1))
 BEGIN
-    DECLARE document_uri TEXT;
+    DECLARE request_uri TEXT;
     DECLARE controller VARCHAR(255);
     DECLARE action VARCHAR(255);
     
     SELECT
-        `Request`.`document_uri` INTO document_uri
+        `Request`.`request_uri` INTO request_uri
     FROM `Request`
     WHERE
         `Request`.`id` = request_id
     ;
     
-    CALL application_router (document_uri, controller, action);
+    CALL application_router (request_uri, controller, action);
     
     IF
-        controller != NULL
-        AND action = NULL
+        controller IS NOT NULL
+        AND action IS NOT NULL
     THEN
         CALL application_dispatch (controller, action, request_id, finish);
     ELSE
-        CALL application_error (request_id, 404);
+        CALL application_error (request_id, 404, finish);
     END IF;
 END|
 
-CREATE PROCEDURE application_router (IN document_uri TEXT, OUT controller VARCHAR(255), OUT action VARCHAR(255))
+CREATE PROCEDURE application_router (IN request_uri TEXT, OUT controller VARCHAR(255), OUT action VARCHAR(255))
 BEGIN
     SELECT
         routes.`controller`,
@@ -33,14 +33,21 @@ BEGIN
         action
     FROM `Application_Routes` routes
     WHERE
-        routes.`pattern` REGEXP document_uri
+        (
+            routes.`type` = 'plain'
+            AND routes.`pattern` = request_uri
+        )
+        OR (
+            routes.`type` = 'regex'
+            AND routes.`pattern` REGEXP request_uri
+        )
     ;
 END|
 
-CREATE PROCEDURE application_register_route (IN controller VARCHAR(255), IN action VARCHAR(255), IN pattern TEXT)
+CREATE PROCEDURE application_register_route (IN controller VARCHAR(255), IN action VARCHAR(255), IN type ENUM('plain', 'regex'), IN pattern TEXT)
 BEGIN
-    INSERT INTO `Application_Routes` (controller, action, pattern)
-    VALUES (controller, action, pattern);
+    INSERT INTO `Application_Routes` (controller, action, type, pattern)
+    VALUES (controller, action, type, pattern);
 END|
 
 CREATE PROCEDURE application_dispatch (IN controller VARCHAR(255), IN action VARCHAR(255), IN request_id INT UNSIGNED, IN finish TINYINT(1))
@@ -56,7 +63,7 @@ BEGIN
     END IF;
 END|
 
-CREATE PROCEDURE application_error (IN request_id INT UNSIGNED, IN error_code SMALLINT UNSIGNED)
+CREATE PROCEDURE application_error (IN request_id INT UNSIGNED, IN error_code SMALLINT UNSIGNED, IN finish TINYINT(1))
 BEGIN
     CASE error_code
     WHEN 404 THEN
@@ -64,6 +71,11 @@ BEGIN
     ELSE
         CALL application_dispatch_error (request_id, 'internal-server-error');
     END CASE;
+    
+    IF finish = 1
+    THEN
+        CALL application_finish (request_id);
+    END IF;
 END|
 
 CREATE PROCEDURE application_dispatch_error (IN request_id INT UNSIGNED, IN error_code SMALLINT UNSIGNED)
@@ -74,10 +86,12 @@ BEGIN
     CALL application_router(CONCAT('error/', error_code), controller, action);
     
     IF
-        controller != NULL
-        AND action != NULL
+        controller IS NOT NULL
+        AND action IS NOT NULL
     THEN
         CALL application_dispatch (controller, action, request_id);
+    ELSE
+        CALL application_respond (request_id, '', '');
     END IF;
 END|
 

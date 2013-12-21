@@ -10,7 +10,7 @@ if [ -z $DBNAME ]; then
     exit;
 fi
 
-mysqldump --compact --compress --extended-insert --hex-blob --single-transaction --ignore-table=$DBNAME.Asset $DUMPARGS  > "$BUILDDIR/install.sql"
+mysqldump --compact --compress --extended-insert --hex-blob --routines --single-transaction --ignore-table=$DBNAME.Asset $DUMPARGS | sed 's/DEFINER=`.*`@`.*` PROCEDURE/PROCEDURE/' > "$BUILDDIR/install.sql"
 mysqldump --compact --compress --single-transaction $DUMPARGS Asset >> "$BUILDDIR/install.sql"
 
 cp -r $WORKINGDIR/public $BUILDDIR

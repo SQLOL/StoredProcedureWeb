@@ -3,5 +3,3 @@
  * then call the module_register_module procedure with the module name.
  */
 
-source module/Test/Module.sql
-CALL module_register_module ('test', TRUE);

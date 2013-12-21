@@ -13,6 +13,6 @@ BEGIN
     WHERE
         routines.ROUTINE_SCHEMA = DATABASE()
         AND routines.ROUTINE_TYPE = 'PROCEDURE'
-        AND routines.ROUTINE_NAME = procedure_name
+        AND routines.ROUTINE_NAME COLLATE utf8_unicode_ci = procedure_name
     ;
 END|

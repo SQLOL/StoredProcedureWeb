@@ -41,5 +41,4 @@ if(!empty($result['headers'])) {
         }
     }
 }
-
 print $result['body'];

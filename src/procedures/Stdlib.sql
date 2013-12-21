@@ -16,3 +16,13 @@ BEGIN
         AND routines.ROUTINE_NAME COLLATE utf8_unicode_ci = procedure_name
     ;
 END|
+
+CREATE PROCEDURE columns_in_table (IN table_name TEXT, OUT count SMALLINT UNSIGNED)
+BEGIN
+    SELECT COUNT(0) INTO count
+    FROM information_schema.COLUMNS columns
+    WHERE
+        columns.TABLE_SCHEMA = DATABASE()
+        AND columns.TABLE_NAME COLLATE utf8_unicode_ci = table_name
+    ;
+END|

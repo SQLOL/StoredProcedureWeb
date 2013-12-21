@@ -31,7 +31,7 @@ BEGIN
     INTO
         controller,
         action
-    FROM `Application_Routes` routes
+    FROM `Application_Route` routes
     WHERE
         (
             routes.`type` = 'plain'
@@ -46,7 +46,7 @@ END|
 
 CREATE PROCEDURE application_register_route (IN controller VARCHAR(255), IN action VARCHAR(255), IN type ENUM('plain', 'regex'), IN pattern TEXT)
 BEGIN
-    INSERT INTO `Application_Routes` (controller, action, type, pattern)
+    INSERT INTO `Application_Route` (controller, action, type, pattern)
     VALUES (controller, action, type, pattern);
 END|
 
@@ -78,18 +78,18 @@ BEGIN
     END IF;
 END|
 
-CREATE PROCEDURE application_dispatch_error (IN request_id INT UNSIGNED, IN error_code SMALLINT UNSIGNED)
+CREATE PROCEDURE application_dispatch_error (IN request_id INT UNSIGNED, IN error_name VARCHAR(255))
 BEGIN
     DECLARE controller VARCHAR(255);
     DECLARE action VARCHAR(255);
 
-    CALL application_router(CONCAT('error/', error_code), controller, action);
+    CALL application_router(CONCAT('error/', error_name), controller, action);
     
     IF
         controller IS NOT NULL
         AND action IS NOT NULL
     THEN
-        CALL application_dispatch (controller, action, request_id);
+        CALL application_dispatch (controller, action, request_id, false);
     ELSE
         CALL application_respond (request_id, '', '');
     END IF;

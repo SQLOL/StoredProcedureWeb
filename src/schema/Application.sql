@@ -1,4 +1,4 @@
-CREATE TABLE Application_Routes (
+CREATE TABLE Application_Route (
     id INT UNSIGNED AUTO_INCREMENT NOT NULL,
     controller VARCHAR(255) NOT NULL,
     action VARCHAR(255) NOT NULL,

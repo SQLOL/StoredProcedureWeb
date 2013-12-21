@@ -29,6 +29,8 @@ CREATE PROCEDURE module_load_module (IN module_name VARCHAR(255))
 BEGIN
     CALL module_ducktype_method (module_name, 'init');
     CALL module_ducktype_method (module_name, 'register_routes');
+    CALL module_ducktype_method (module_name, 'register_views');
+    CALL module_ducktype_method (module_name, 'load_assets');
 END|
 
 CREATE PROCEDURE module_ducktype_method (IN name VARCHAR(255), IN method VARCHAR(255))

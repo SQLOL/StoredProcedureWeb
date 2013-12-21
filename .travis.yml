@@ -1,5 +1,5 @@
 language: sql
 before_script:
   - mysql -u travis -e 'CREATE DATABASE StoredProcedureWeb;'
-  - mysql -u travis -e 'source src/StoredProcedureWeb.sql;'
-script: mysql -u travis -e 'CALL sqlunit_execute;'
+  - mysql -u travis -D StoredProcedureWeb -e 'source src/StoredProcedureWeb.sql;'
+script: mysql -u travis -D StoredProcedureWeb -e 'CALL sqlunit_execute;'

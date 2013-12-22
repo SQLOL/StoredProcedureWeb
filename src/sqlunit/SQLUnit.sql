@@ -47,10 +47,26 @@ END|
 
 CREATE PROCEDURE sqlunit$results ()
 BEGIN
+    DECLARE failed_tests SMALLINT UNSIGNED;
+    
     SELECT
         *
     FROM `sqlunit_results`
     ;
+    
+    SELECT
+        count(0)
+    INTO
+        failed_tests
+    FROM `sqlunit_results`
+    WHERE
+        `sqlunit_results`.`result` = 'FAIL'
+    ;
+    
+    IF failed_tests > 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'One or more tests has failed.';
+    END IF;
 END|
 
 CREATE PROCEDURE sqlunit$execute_test (IN name VARCHAR(255))

@@ -23,8 +23,8 @@ BEGIN
     
     IF request_id IS NULL
     THEN
-        CALL sqlunit_fail (test_name, 'Request ID not generated');
+        CALL sqlunit$fail (test_name, 'Request ID not generated');
     ELSE
-        CALL sqlunit_pass (test_name, 'Success');
+        CALL sqlunit$pass (test_name, 'Success');
     END IF;
 END|

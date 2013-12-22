@@ -25,7 +25,7 @@ delimiter ;
 source src/config.sql
 source application/config.sql
 
-CALL module_register_module ('application', TRUE);
+CALL module$register_module ('application', TRUE);
 source application/modules.sql
 
-CALL module_load_modules;
+CALL module$load_modules;

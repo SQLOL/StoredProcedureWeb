@@ -4,6 +4,7 @@ CREATE PROCEDURE request (
     IN finish TINYINT(1)
 )
 BEGIN
+    CALL request$init;
     INSERT INTO `Request` (
         request_method,
         request_uri
@@ -17,13 +18,13 @@ END|
 
 CREATE PROCEDURE request$init ()
 BEGIN
-    CREATE TEMPORARY TABLE Request$Header (
+    CREATE TEMPORARY TABLE IF NOT EXISTS Request$Header (
         name VARCHAR(255) NOT NULL,
         value TEXT NOT NULL,
         PRIMARY KEY (name)
     ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
     
-    CREATE TEMPORARY TABLE Request$Param (
+    CREATE TEMPORARY TABLE IF NOT EXISTS Request$Param (
         name VARCHAR(255) NOT NULL,
         value TEXT NOT NULL,
         PRIMARY KEY (name)

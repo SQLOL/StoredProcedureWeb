@@ -54,7 +54,7 @@ END|
 
 CREATE PROCEDURE application$dispatch (IN controller VARCHAR(255), IN action VARCHAR(255), IN request_id INT UNSIGNED, IN finish TINYINT(1))
 BEGIN
-    SET @dispatched_call = CONCAT('CALL ', controller, '_', action, ' (', request_id, ')');
+    SET @dispatched_call = CONCAT('CALL ', controller, '$', action, ' (', request_id, ')');
     PREPARE dispatched_call FROM @dispatched_call;
     EXECUTE dispatched_call;
     DEALLOCATE PREPARE dispatched_call;
@@ -126,7 +126,7 @@ BEGIN
     ;
 END|
 
-CREATE PROCEDURE application$event_sqlunit_start ()
+CREATE PROCEDURE application$event$sqlunit_start ()
 BEGIN
     CREATE TEMPORARY TABLE TEMP_Application_Route LIKE `Application_Route`;
     INSERT INTO `TEMP_Application_Route` SELECT * FROM `Application_Route`;
@@ -135,14 +135,14 @@ BEGIN
     DELETE FROM `Response`;
 END|
 
-CREATE PROCEDURE application$event_sqlunit_setup ()
+CREATE PROCEDURE application$event$sqlunit_setup ()
 BEGIN
     DELETE FROM `Application_Route`;
     DELETE FROM `Request`;
     DELETE FROM `Response`;
 END|
 
-CREATE PROCEDURE application$event_sqlunit_end ()
+CREATE PROCEDURE application$event$sqlunit_end ()
 BEGIN
     DELETE FROM `Application_Route`;
     DELETE FROM `Request`;

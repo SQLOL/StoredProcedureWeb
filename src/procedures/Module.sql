@@ -1,51 +1,47 @@
 CREATE PROCEDURE module$load_modules ()
 BEGIN
+    CALL module$ducktype_method ('init');
+    CALL module$ducktype_method ('register_routes');
+    CALL module$ducktype_method ('register_views');
+    CALL module$ducktype_method ('load_assets');
+END|
+
+CREATE PROCEDURE module$ducktype_method (IN method VARCHAR(255))
+BEGIN
     DECLARE done TINYINT(1) DEFAULT FALSE;
-    DECLARE module_name VARCHAR(255);
-    DECLARE modules CURSOR FOR
+    DECLARE method_callback VARCHAR(255);
+    DECLARE methods CURSOR FOR
         SELECT
-            `Module`.`name`
-        FROM `Module`
+            routines.ROUTINE_NAME
+        FROM information_schema.ROUTINES AS routines
         WHERE
-            `Module`.`enabled` = 1
+            routines.ROUTINE_SCHEMA = DATABASE()
+            AND routines.ROUTINE_TYPE = 'PROCEDURE'
+            AND routines.ROUTINE_NAME COLLATE utf8_unicode_ci IN (
+                SELECT
+                    CONCAT(`Module`.`name`, '$', method)
+                FROM `Module`
+                WHERE
+                    `Module`.`enabled` = 1
+            )
     ;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     
-    OPEN modules;
+    OPEN methods;
     
-    module_load_loop: LOOP
-        FETCH modules INTO module_name;
+    method_handler_loop: LOOP
+        FETCH methods INTO method_callback;
         IF done THEN
-            LEAVE module_load_loop;
+            LEAVE method_handler_loop;
         END IF;
         
-        CALL module$load_module (module_name);
+        SET @ducktyped_method := CONCAT('CALL ', method_callback);
+        PREPARE ducktype_call FROM @ducktyped_method;
+        EXECUTE ducktype_call;
+        DEALLOCATE PREPARE ducktype_call;
     END LOOP;
     
-    CLOSE modules;
-END|
-
-CREATE PROCEDURE module$load_module (IN module_name VARCHAR(255))
-BEGIN
-    CALL module$ducktype_method (module_name, 'init');
-    CALL module$ducktype_method (module_name, 'register_routes');
-    CALL module$ducktype_method (module_name, 'register_views');
-    CALL module$ducktype_method (module_name, 'load_assets');
-END|
-
-CREATE PROCEDURE module$ducktype_method (IN name VARCHAR(255), IN method VARCHAR(255))
-BEGIN
-    DECLARE method_exists TINYINT(1) DEFAULT FALSE;
-    
-    CALL procedure_exists (CONCAT(name, '$', method), method_exists);
-    
-    IF method_exists
-    THEN
-        SET @ducktyped_call := CONCAT('CALL ', name, '$', method);
-        PREPARE ducktyped_call FROM @ducktyped_call;
-        EXECUTE ducktyped_call;
-        DEALLOCATE PREPARE ducktyped_call;
-    END IF;
+    CLOSE methods;
 END|
 
 CREATE PROCEDURE module$register_module (IN module_name VARCHAR(255), IN enabled TINYINT(1))
@@ -57,27 +53,5 @@ END|
 
 CREATE PROCEDURE module$trigger_event (IN event_name VARCHAR(255))
 BEGIN
-    DECLARE done TINYINT(1) DEFAULT FALSE;
-    DECLARE module_name VARCHAR(255);
-    DECLARE modules CURSOR FOR
-        SELECT
-            `Module`.`name`
-        FROM `Module`
-        WHERE
-            `Module`.`enabled` = 1
-    ;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-    
-    OPEN modules;
-    
-    module_load_loop: LOOP
-        FETCH modules INTO module_name;
-        IF done THEN
-            LEAVE module_load_loop;
-        END IF;
-        
-        CALL module$ducktype_method (module_name, CONCAT('event_', event_name));
-    END LOOP;
-    
-    CLOSE modules;
+    CALL module$ducktype_method (CONCAT('event$', event_name));
 END|

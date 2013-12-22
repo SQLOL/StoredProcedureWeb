@@ -3,4 +3,4 @@ before_script:
   - touch application/modules.sql
   - mysql -u travis -e 'CREATE DATABASE StoredProcedureWeb;'
   - mysql -u travis -D StoredProcedureWeb < install.sql
-script: mysql -u travis -D StoredProcedureWeb -e 'CALL sqlunit_execute; CALL sqlunit_results;'
+script: mysql -u travis -D StoredProcedureWeb -e 'CALL sqlunit$execute; CALL sqlunit$results;'

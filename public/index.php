@@ -1,5 +1,11 @@
 <?php
-$pdo = new PDO('mysql:dbname='.$_SERVER['DB_NAME'].';host='.$_SERVER['DB_HOST'], $_SERVER['DB_USER'], $_SERVER['DB_PASSWORD']);
+$dsn = 'mysql:dbname='.$_SERVER['DB_NAME'];
+if(isset($_SERVER['DB_HOST'])) {
+    $dsn .= ';host='.$_SERVER['DB_HOST'];
+} elseif(isset($_SERVER['DB_SOCKET'])) {
+    $dsn .= ';unix_socket='.$_SERVER['DB_SOCKET'];
+}
+$pdo = new PDO($dsn, $_SERVER['DB_USER'], $_SERVER['DB_PASSWORD']);
 
 $pdo->exec('CALL request$init');
 

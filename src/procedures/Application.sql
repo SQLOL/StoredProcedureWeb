@@ -3,6 +3,8 @@ BEGIN
     DECLARE request_uri TEXT;
     DECLARE controller VARCHAR(255);
     DECLARE action VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        CALL application_error (request_id, 500, finish);
     
     SELECT
         `Request`.`request_uri` INTO request_uri
@@ -122,4 +124,30 @@ BEGIN
     WHERE
         `Response`.`id` = request_id
     ;
+END|
+
+CREATE PROCEDURE application_event_sqlunit_start ()
+BEGIN
+    CREATE TEMPORARY TABLE TEMP_Application_Route LIKE `Application_Route`;
+    INSERT INTO `TEMP_Application_Route` SELECT * FROM `Application_Route`;
+    DELETE FROM `Application_Route`;
+    DELETE FROM `Request`;
+    DELETE FROM `Response`;
+END|
+
+CREATE PROCEDURE application_event_sqlunit_setup ()
+BEGIN
+    DELETE FROM `Application_Route`;
+    DELETE FROM `Request`;
+    DELETE FROM `Response`;
+END|
+
+CREATE PROCEDURE application_event_sqlunit_end ()
+BEGIN
+    DELETE FROM `Application_Route`;
+    DELETE FROM `Request`;
+    DELETE FROM `Response`;
+    
+    INSERT INTO `Application_Route` SELECT * FROM `TEMP_Application_Route`;
+    DROP TEMPORARY TABLE `TEMP_Application_Route`;
 END|

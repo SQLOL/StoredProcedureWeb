@@ -1,0 +1,3 @@
+source tests/Application/application.sql
+CALL sqlunit_register_test('sqlunit_test_application_application_router_plain');
+CALL sqlunit_register_test('sqlunit_test_application_application_router_plain_fail');

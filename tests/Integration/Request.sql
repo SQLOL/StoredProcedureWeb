@@ -25,6 +25,6 @@ BEGIN
     THEN
         CALL sqlunit_fail (test_name, 'Request ID not generated');
     ELSE
-        CALL sqlunit_pass ('sqlunit_test_integration_request', 'Success');
+        CALL sqlunit_pass (test_name, 'Success');
     END IF;
 END|

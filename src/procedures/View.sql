@@ -9,6 +9,25 @@ END|
 
 CREATE PROCEDURE view$clean (IN view_id INT UNSIGNED)
 BEGIN
+    DECLARE view_name VARCHAR(255);
+    DECLARE cleanup_handler_exists TINYINT(1) DEFAULT 0;
+    
+    SELECT
+        `View_Template`.`callback`
+    INTO
+        view_name
+    FROM `View`
+    INNER JOIN `View_Template`
+        ON `View_Template`.`name` = `View`.`template`
+    WHERE
+        `View`.`id` = view_id
+    ;
+    
+    CALL procedure_exists(CONCAT(view_name, '$clean'), cleanup_handler_exists);
+    IF cleanup_handler_exists = 1 THEN
+        CALL call_dynamic (CONCAT('CALL ', view_name, '$clean (', view_id, ')'));
+    END IF;
+    
     DELETE FROM `View`
     WHERE
         `View`.`id` = view_id
@@ -90,4 +109,9 @@ BEGIN
     WHERE
         `View_Rendered`.`id` = view_id
     ;
+END|
+
+CREATE PROCEDURE view$replace_placeholder (INOUT content TEXT, IN placeholder VARCHAR(255), IN replacement VARCHAR(255))
+BEGIN
+    SET content = REPLACE(content, CONCAT('{%', placeholder, '%}'), replacement);
 END|

@@ -18,6 +18,8 @@ END|
 
 CREATE PROCEDURE request$init ()
 BEGIN
+    SET @@max_sp_recursion_depth := 255;
+
     CREATE TEMPORARY TABLE IF NOT EXISTS Request$Header (
         name VARCHAR(255) NOT NULL,
         value TEXT NOT NULL,

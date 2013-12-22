@@ -23,9 +23,5 @@ source tests/sqlunit.sql
 delimiter ;
 
 source src/config.sql
-source application/config.sql
 
 CALL module$register_module ('application', TRUE);
-source application/modules.sql
-
-CALL module$load_modules;

@@ -1,0 +1,110 @@
+<div class="container">
+    <blockquote>
+        <p class="lead">
+            Stored Procedure Web (SPW) is a Web Scale opinionated MVC framework
+            built in pure SQL. Most web developers today make use of a middleman
+            language such as PHP, Ruby, or Python, where the main bottleneck for
+            performance tends to be database access round-trips. With SPW, we cut
+            out the middleman and serve requests directly from the database.
+        </p>
+        <p class="lead">
+            SPW is a compile-once static application framework with a modular
+            design, and a focus on cross-cutting concerns. When you bootstrap your
+            application, it is loaded as a schema in your database, composed of
+            stored procedures and a bit of configuration.
+        </p>
+    </blockquote>
+    <h2 id="web-scale">Web Scale</h2>
+    <p>
+        Because SPW is merely a schema on your database server, you are able to
+        replicate it to as many database servers as you desire. By federating
+        your request and response tables, you can even scale it across slaves!
+    </p>
+    <p>
+        Distributed with SPW is a small PHP script which lets you get your
+        application up and running quickly, and also serves as a simple way
+        to test your application in development. However, this is but one way
+        to dispatch requests to SPW. How you get the requests into and out of
+        SPW is entirely up to you. Using a MySQL module for nginx, you could
+        serve requests directly via the webserver.
+    </p>
+    <h2 id="performance">Performance</h2>
+    <p>
+        When you compile your application into the schema, all of your code is
+        hosted in the schema. This means that the performance of your
+        application is tied directly to the performance of your database server.
+        If you have a very powerful database server, you will have a very
+        powerful application.
+    </p>
+    <p>
+        Unfortunately, contrary to what you might think, MySQL does not
+        <em>compile</em> all of the stored procedures at definition, but rather
+        stores them in in the schema and compiles them as needed. This yields
+        a couple of pros, and a couple of cons.
+    </p>
+    <p>
+        The first and most obvious benefit of this is that all of your
+        application code is not always in memory, all of the time. That's
+        beneficial because each request would have to first be buffered with
+        all of the application code. Instead, MySQL has a procedure cache which
+        caches recently-used procedures. This can yield a significant
+        performance gain, because commonly-executed code is not always
+        re-compiled for each request.
+    </p>
+    <p>
+        The second major benefit is that if you decide to augment your
+        application after compiling it (e.g. loading more modules), this can be
+        done on the fly.
+    </p>
+    <p>
+        The most significant problem with the JIT compilation of procedures is
+        that each and every connection does require its own cache of compiled
+        procedures, and if you make any modifications to the procedures in the
+        schema, each one's cache is invalidated and needs to be recompiled.
+    </p>
+    <p>
+        The lesser problem is that if you are running multiple database servers,
+        and push a patch out to one of them, then they can become out of sync
+        with the others. This can be beneficial, but can also be problematic.
+    </p>
+    <h2 id="security">Security</h2>
+    <p>
+        Unless you're executing SQL dynamically in your application, there is
+        absolutely no room for SQL injection (except for when you're passing
+        the request to SPW, but that's outside the scope of this framework).
+        All data exists in the security context of your database server, so
+        SQL injection is a near impossibility.
+    </p>
+    <p>
+        As well, if the database user which is passing the requests to the server
+        is limited to the EXECUTE privilege on the <em>request</em> procedure,
+        there is no way for them to execute anything but requests on the
+        application.
+    </p>
+    <h2 id="why-god-why">For the love of god, why?</h2>
+    <p>
+        It occurs to me that even with all of the "Web Scale" crap, buzzwords,
+        and the obvious idiocy of this project, some people may still think I'm
+        serious. This project is completely ridiculous and you should never,
+        ever use it for anything.
+    </p>
+    <p>
+        This project initially started as a joke in the PHP community channel
+        about how I was wont to writing what were essentially whole applications
+        in SQL, as a means to prototype database logic for a project. From this,
+        I decided it would be hilarious to try to write an entire project in
+        SQL.
+    </p>
+    <p>
+        When I started, I expected to write a few stored procedures which served
+        up static content, and be done with it. However, as things progressed,
+        I was scared to find that, despite being clunky and impossible to
+        maintain, the code I was writing actually did things fairly fast,
+        and many of the typical MVC framework patterns were easy to implement.
+    </p>
+    <p>
+        It's frightening to say that, with a few added features, this thing
+        could probably be ridiculously fast and relatively easy to develop with.
+        But, I reiterate: Don't use this. It's a joke that outgrew its
+        funniness.
+    </p>

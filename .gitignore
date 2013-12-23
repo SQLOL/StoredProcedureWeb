@@ -2,3 +2,5 @@ application/modules.sql
 application/config.sql
 module/
 public/
+
+install.tar.gz

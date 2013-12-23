@@ -84,8 +84,11 @@ CREATE PROCEDURE application$dispatch_error (IN request_id INT UNSIGNED, IN erro
 BEGIN
     DECLARE controller VARCHAR(255);
     DECLARE action VARCHAR(255);
-
-    CALL application$router(CONCAT('error/', error_name), controller, action);
+    DECLARE route VARCHAR(255);
+    
+    CALL config$get (CONCAT('application$route$', error_name), route);
+    
+    CALL application$router (route, controller, action);
     
     IF
         controller IS NOT NULL

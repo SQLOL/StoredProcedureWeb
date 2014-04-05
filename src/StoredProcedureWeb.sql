@@ -18,6 +18,9 @@ source src/procedures/Application.sql
 source src/procedures/Module.sql
 source src/procedures/Asset.sql
 
+source src/Controller/Debug.sql
+source src/View/Debug.sql
+
 source src/sqlunit/SQLUnit.sql
 source tests/sqlunit.sql
 delimiter ;

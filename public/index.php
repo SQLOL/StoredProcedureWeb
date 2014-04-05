@@ -44,7 +44,7 @@ if(!empty($paramParams)) {
 $statement = $pdo->prepare('CALL request (
     :request_method,
     :request_uri,
-    true
+    false
 )');
 
 $statement->execute(array(

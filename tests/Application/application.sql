@@ -22,6 +22,9 @@ BEGIN
 END|
 
 CREATE PROCEDURE sqlunit_test_application_application_router_plain_fail ()
+COMMENT '
+@covers application$router
+'
 BEGIN
     DECLARE test_name VARCHAR(255) DEFAULT 'sqlunit_test_application_application_router_plain_fail';
     DECLARE selected_controller VARCHAR(255);

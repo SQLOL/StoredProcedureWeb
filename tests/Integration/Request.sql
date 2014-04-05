@@ -1,4 +1,7 @@
 CREATE PROCEDURE sqlunit_test_integration_request ()
+COMMENT '
+@covers request
+'
 BEGIN
     DECLARE test_name VARCHAR(255) DEFAULT 'sqlunit_test_integration_request';
     DECLARE request_id INT UNSIGNED;

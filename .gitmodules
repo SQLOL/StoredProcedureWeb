@@ -16,3 +16,6 @@
 [submodule "vendor/View"]
 	path = vendor/View
 	url = https://github.com/SQLOL/View.git
+[submodule "vendor/ModuleManager"]
+	path = vendor/ModuleManager
+	url = https://github.com/SQLOL/ModuleManager.git

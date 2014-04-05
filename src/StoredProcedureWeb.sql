@@ -8,7 +8,6 @@ source src/schema/Module.sql
 source src/schema/Asset.sql
 
 delimiter |
-source src/procedures/Stdlib.sql
 source src/procedures/Config.sql
 source src/procedures/Request.sql
 source src/procedures/Response.sql

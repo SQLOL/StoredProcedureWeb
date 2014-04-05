@@ -1,3 +1,6 @@
 [submodule "vendor/SQLUnit"]
 	path = vendor/SQLUnit
 	url = git@github.com:SQLOL/SQLUnit.git
+[submodule "vendor/StdLib"]
+	path = vendor/StdLib
+	url = git@github.com:SQLOL/StdLib.git

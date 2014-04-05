@@ -4,3 +4,6 @@
 [submodule "vendor/StdLib"]
 	path = vendor/StdLib
 	url = https://github.com/SQLOL/StdLib.git
+[submodule "vendor/AssetManager"]
+	path = vendor/AssetManager
+	url = https://github.com/SQLOL/AssetManager.git

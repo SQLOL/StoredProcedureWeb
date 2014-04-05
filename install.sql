@@ -1,3 +1,4 @@
+source vendor/AssetManager/Module.sql
 source vendor/SQLUnit/Module.sql
 source vendor/StdLib/Module.sql
 source src/StoredProcedureWeb.sql

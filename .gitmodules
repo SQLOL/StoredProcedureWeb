@@ -13,3 +13,6 @@
 [submodule "vendor/HTTP"]
 	path = vendor/HTTP
 	url = https://github.com/SQLOL/HTTP.git
+[submodule "vendor/View"]
+	path = vendor/View
+	url = https://github.com/SQLOL/View.git

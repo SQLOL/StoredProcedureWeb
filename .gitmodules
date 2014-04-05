@@ -1,0 +1,3 @@
+[submodule "vendor/SQLUnit"]
+	path = vendor/SQLUnit
+	url = git@github.com:SQLOL/SQLUnit.git

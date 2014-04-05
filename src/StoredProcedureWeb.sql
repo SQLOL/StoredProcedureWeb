@@ -1,5 +1,4 @@
 delimiter ;
-source src/schema/Config.sql
 source src/schema/Request.sql
 source src/schema/Response.sql
 source src/schema/View.sql
@@ -7,7 +6,6 @@ source src/schema/Application.sql
 source src/schema/Module.sql
 
 delimiter |
-source src/procedures/Config.sql
 source src/procedures/Request.sql
 source src/procedures/Response.sql
 source src/procedures/View.sql

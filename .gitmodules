@@ -7,3 +7,6 @@
 [submodule "vendor/AssetManager"]
 	path = vendor/AssetManager
 	url = https://github.com/SQLOL/AssetManager.git
+[submodule "vendor/Config"]
+	path = vendor/Config
+	url = https://github.com/SQLOL/Config.git

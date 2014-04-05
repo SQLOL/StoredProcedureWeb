@@ -114,7 +114,7 @@ BEGIN
     LEFT JOIN `Test`
         ON `Test`.`id` = `sqlunit_coverage_coveredby`.`test_id`
     ORDER BY
-        `sqlunit_coverage`.`procedure_name` DESC
+        `sqlunit_coverage`.`procedure_name` ASC
     ;
 END|
 

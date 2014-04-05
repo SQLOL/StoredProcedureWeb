@@ -1,6 +1,6 @@
 # Stored Procedure Web
 
-[![Build Status](https://travis-ci.org/TheFrozenFire/StoredProcedureWeb.png?branch=master)](https://travis-ci.org/TheFrozenFire/StoredProcedureWeb)
+[![Build Status](https://travis-ci.org/SQLOL/StoredProcedureWeb.png?branch=master)](https://travis-ci.org/SQLOL/StoredProcedureWeb)
 
 Stored Procedure Web (SPW) is a Web Scale opinionated MVC framework built in
 pure SQL. Most web developers today make use of a middleman language such as

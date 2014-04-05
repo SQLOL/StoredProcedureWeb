@@ -131,6 +131,7 @@ END|
 
 CREATE PROCEDURE application$event$sqlunit_start ()
 BEGIN
+    DROP TEMPORARY TABLE IF EXISTS `TEMP_Application_Route`;
     CREATE TEMPORARY TABLE TEMP_Application_Route LIKE `Application_Route`;
     INSERT INTO `TEMP_Application_Route` SELECT * FROM `Application_Route`;
     DELETE FROM `Application_Route`;

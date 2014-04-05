@@ -10,3 +10,6 @@
 [submodule "vendor/Config"]
 	path = vendor/Config
 	url = https://github.com/SQLOL/Config.git
+[submodule "vendor/HTTP"]
+	path = vendor/HTTP
+	url = https://github.com/SQLOL/HTTP.git

@@ -100,3 +100,102 @@ BEGIN
     INSERT INTO `sqlunit_results` (result, name, message)
     VALUES ('SKIPPED', name, message);
 END|
+
+CREATE PROCEDURE sqlunit$coverage ()
+BEGIN
+    CALL sqlunit$coverage$calculate_coverage ();
+    
+    SELECT
+        `sqlunit_coverage`.`procedure_name` AS procedure_name,
+        IF(`Test`.`name` IS NOT NULL, `Test`.`name`, 'Not covered') AS test_name
+    FROM `sqlunit_coverage`
+    LEFT JOIN `sqlunit_coverage_coveredby`
+        ON `sqlunit_coverage_coveredby`.`procedure_name` = `sqlunit_coverage`.`procedure_name`
+    LEFT JOIN `Test`
+        ON `Test`.`id` = `sqlunit_coverage_coveredby`.`test_id`
+    ORDER BY
+        `sqlunit_coverage`.`procedure_name` DESC
+    ;
+END|
+
+CREATE PROCEDURE sqlunit$coverage$calculate_coverage ()
+BEGIN
+    DECLARE test_id INT UNSIGNED;
+    DECLARE test_name VARCHAR(255);
+    DECLARE done TINYINT(1) DEFAULT FALSE;
+    DECLARE tests CURSOR FOR SELECT
+        `Test`.`id` AS id,
+        `Test`.`name` AS name
+    FROM `Test`
+    ;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = true;
+    
+    DROP TEMPORARY TABLE IF EXISTS `sqlunit_coverage`;
+    CREATE TEMPORARY TABLE sqlunit_coverage (
+        procedure_name VARCHAR(64) UNIQUE NOT NULL
+    ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
+    
+    INSERT INTO `sqlunit_coverage`
+    SELECT
+        routines.`SPECIFIC_NAME`
+    FROM information_schema.ROUTINES AS routines
+    WHERE
+        routines.ROUTINE_SCHEMA = DATABASE()
+        AND routines.ROUTINE_TYPE = 'PROCEDURE'
+    GROUP BY routines.`SPECIFIC_NAME`
+    ;
+    
+    DROP TEMPORARY TABLE IF EXISTS `sqlunit_coverage_coveredby`;
+    CREATE TEMPORARY TABLE sqlunit_coverage_coveredby (
+        procedure_name VARCHAR(64) NOT NULL,
+        test_id INT UNSIGNED NOT NULL
+    ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
+    
+    CALL module$trigger_event ('sqlunit_coverage_start');
+    
+    OPEN tests;
+    
+    test_loop: LOOP
+        FETCH tests INTO test_id, test_name;
+        
+        IF done THEN
+            LEAVE test_loop;
+        END IF;
+        
+        CALL procedure_annotations (test_name);
+        
+        CALL sqlunit$coverage$associate_coverage (test_id);
+    END LOOP;
+    
+    CLOSE tests;
+    
+    CALL module$trigger_event ('sqlunit_coverage_end');
+END|
+
+CREATE PROCEDURE sqlunit$coverage$associate_coverage (test_id INT UNSIGNED)
+BEGIN
+    DECLARE covered_procedure VARCHAR(64);
+    DECLARE done TINYINT(1) DEFAULT FALSE;
+    DECLARE annotations CURSOR FOR SELECT
+        `parameters` AS covered_procedure
+    FROM `parsed_annotations`
+    WHERE
+        `type` = 'covers'
+    ;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = true;
+    
+    OPEN annotations;
+    
+    association_loop: LOOP
+        FETCH annotations INTO covered_procedure;
+        
+        IF done THEN
+            LEAVE association_loop;
+        END IF;
+        
+        INSERT INTO `sqlunit_coverage_coveredby` (`procedure_name`, `test_id`)
+        VALUES (covered_procedure, test_id);
+    END LOOP;
+    
+    CLOSE annotations;
+END|

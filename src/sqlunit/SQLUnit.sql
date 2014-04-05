@@ -165,6 +165,13 @@ BEGIN
         CALL procedure_annotations (test_name);
         
         CALL sqlunit$coverage$associate_coverage (test_id);
+        
+        DELETE
+            `sqlunit_coverage`
+        FROM `sqlunit_coverage`
+        INNER JOIN `Test`
+            ON `sqlunit_coverage`.`procedure_name` = `Test`.`name`
+        ;
     END LOOP;
     
     CLOSE tests;
